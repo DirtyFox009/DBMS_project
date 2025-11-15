@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindCare AI Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4a6fa5;
+            --secondary: #6b8cbc;
+            --accent: #ff6b6b;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --admin-primary: #2c3e50; /* Dark Blue for Admin/Sidebar */
+            --admin-secondary: #34495e;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background: var(--admin-secondary); /* Darker background to match image */
+            color: white;
+            padding: 20px 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+        }
+        
+        .logo i {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .nav-links {
+            list-style: none;
+            padding: 0 10px;
+        }
+        
+        .nav-links li {
+            margin-bottom: 5px;
+        }
+        
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            background-color: var(--admin-primary); /* Highlight color to match image */
+        }
+        
+        .nav-links i {
+            margin-right: 10px;
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .header h2 {
+            color: var(--admin-primary);
+            font-weight: 600;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+        
+        .dashboard-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .dashboard-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .welcome-card {
+            background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary));
+            color: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(44, 62, 80, 0.2);
+        }
+        
+        .welcome-card h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-card p {
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+        
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card h3 {
+            color: var(--admin-primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card h3 i {
+            margin-right: 10px;
+        }
+        
+        .system-status {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .status-item {
+            text-align: center;
+        }
+        
+        .status-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .status-label {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .status-good { color: var(--success); }
+        .status-warning { color: var(--warning); }
+        .status-danger { color: var(--danger); }
+        
+        .chart-container {
+            height: 250px;
+            margin-top: 15px;
+            position: relative;
+        }
+        
+        .log-entry {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background-color: var(--light);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .log-time {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .log-details {
+            display: flex;
+            justify-content: space-between;
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        .insight-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .insight-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .insight-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+        
+        .ai-tag {
+            background-color: #e3f2fd;
+            color: var(--primary);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-left: auto;
+        }
+        
+        .recommendation-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .recommendation-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            align-items: center;
+        }
+        
+        .recommendation-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .recommendation-list i {
+            color: var(--success);
+            margin-right: 10px;
+        }
+        
+        .risk-high { color: var(--danger); font-weight: 600; }
+        .risk-medium { color: var(--warning); font-weight: 600; }
+        .risk-low { color: var(--success); font-weight: 600; }
+        
+        .alert-item {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background-color: var(--light);
+            border-left: 4px solid var(--danger);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .alert-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .alert-title {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .alert-risk {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .alert-risk.risk-high {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .alert-risk.risk-medium {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+        
+        .alert-risk.risk-low {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .data-table th, .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .data-table th {
+            background-color: var(--light);
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .data-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        
+        .action-btn:hover {
+            color: var(--secondary);
+        }
+        
+        /* Feature-specific styles */
+        .feature-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .feature-table th, .feature-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .feature-table th {
+            background-color: var(--light);
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .feature-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .search-box {
+            padding: 10px 15px;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            width: 250px;
+            margin-bottom: 15px;
+        }
+        
+        .table-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .edit-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .delete-btn {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            
+            .nav-links {
+                display: flex;
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+            
+            .nav-links li {
+                margin-bottom: 0;
+                margin-right: 10px;
+            }
+            
+            .nav-links a {
+                white-space: nowrap;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .user-info {
+                margin-top: 15px;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-cogs"></i>
+                <h1>MindCare AI Admin</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" class="nav-link active" data-target="overview"><i class="fas fa-tachometer-alt"></i> System Overview</a></li>
+                <li><a href="#" class="nav-link" data-target="daily-log"><i class="fas fa-users"></i> Daily Logs</a></li>
+                <li><a href="#" class="nav-link" data-target="mood-analysis"><i class="fas fa-heartbeat"></i> Mood Analysis</a></li>
+                <li><a href="#" class="nav-link" data-target="recommendations"><i class="fas fa-clipboard-list"></i> Recommendations</a></li>
+                <li><a href="#" class="nav-link" data-target="counsellor-management"><i class="fas fa-user-md"></i> Counsellor Management</a></li>
+                <li><a href="#" class="nav-link" data-target="progress-tracking"><i class="fas fa-chart-line"></i> Progress Tracking</a></li>
+                <li><a href="#" class="nav-link" data-target="crisis-detection"><i class="fas fa-life-ring"></i> Crisis Detection</a></li>
+            </ul>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <h2 id="page-title">System Overview</h2>
+                <div class="user-info">
+                    <img src="https://i.pravatar.cc/150?img=32" alt="User Avatar">
+                    <span>Admin User</span>
+                </div>
+            </div>
+            
+            <!-- 1. System Overview Section -->
+            <div id="overview" class="dashboard-section active">
+                <div class="welcome-card">
+                    <h3>System Overview</h3>
+                    <p>Monitor and manage the AI Mental Health Platform's technical health, security, and stability.</p>
+                </div>
+                
+                <div class="cards-container">
+                    <div class="card">
+                        <h3><i class="fas fa-server"></i> System Status</h3>
+                        <div class="system-status">
+                            <div class="status-item">
+                                <div class="status-value status-good">99.8%</div>
+                                <div class="status-label">Uptime</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-value status-good">42ms</div>
+                                <div class="status-label">Avg. Response</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-value status-good">1.2K</div>
+                                <div class="status-label">Active Users</div>
+                            </div>
+                        </div>
+                        <p>All systems are operating normally. No critical issues detected.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Recent Alerts</h3>
+                        <div class="alert-item" style="border-left-color: var(--warning);">
+                            <div class="alert-header">
+                                <div class="alert-title">High CPU Usage</div>
+                                <div class="alert-risk risk-medium">WARNING</div>
+                            </div>
+                            <div class="log-details">
+                                <span>Server-03</span>
+                                <span>15 min ago</span>
+                            </div>
+                        </div>
+                        <div class="alert-item" style="border-left-color: var(--danger);">
+                            <div class="alert-header">
+                                <div class="alert-title">Database Connection Error</div>
+                                <div class="alert-risk risk-high">CRITICAL</div>
+                            </div>
+                            <div class="log-details">
+                                <span>DB-Primary</span>
+                                <span>2 hours ago</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3><i class="fas fa-chart-bar"></i> API Usage</h3>
+                        <div class="chart-container">
+                            <canvas id="apiUsageChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 2. Daily Logs Section (Feature 1) -->
+            <div id="daily-log" class="dashboard-section">
+                <div class="header">
+                    <h2 id="page-title-daily-log">Daily Logs</h2>
+                </div>
+                <div class="welcome-card" style="background: linear-gradient(135deg, var(--primary), var(--secondary));">
+                    <h3>Daily Mood & Stress Logging</h3>
+                    <p>Track user mood, stress levels, and sleep duration with daily notes.</p>
+                    <button class="btn btn-success">
+                        <i class="fas fa-plus"></i> Add New Log
+                    </button>
+                </div>
+                
+                <div class="cards-container">
+                    <div class="card">
+                        <h3><i class="fas fa-heartbeat"></i> Today's Mood Summary</h3>
+                        <div class="system-status">
+                            <div class="status-item">
+                                <div class="status-value status-good">7.2</div>
+                                <div class="status-label">Avg. Mood Score</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-value status-warning">5.8</div>
+                                <div class="status-label">Avg. Stress Level</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-value status-good">7.5</div>
+                                <div class="status-label">Avg. Sleep Score</div>
+                            </div>
+                        </div>
+                        <p>Overall user mood is stable compared to yesterday.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3><i class="fas fa-list-alt"></i> Recent User Logs</h3>
+                        <div class="log-entry" style="border-left-color: var(--success);">
+                            <div class="log-time">Sarah Johnson - 10:00 AM</div>
+                            <div class="log-details">
+                                <span>Mood: Happy (8/10)</span>
+                                <span>Stress: Low (3/10)</span>
+                            </div>
+                        </div>
+                        <div class="log-entry" style="border-left-color: var(--danger);">
+                            <div class="log-time">David Wilson - 9:30 AM</div>
+                            <div class="log-details">
+                                <span>Mood: Sad (4/10)</span>
+                                <span>Stress: High (9/10)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-table"></i> Daily Logs Data</h3>
+                    <div class="table-actions">
+                        <input type="text" class="search-box" placeholder="Search logs...">
+                        <button class="btn btn-primary"><i class="fas fa-plus"></i> Add New Log</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="feature-table">
+                            <thead>
+                                <tr>
+                                    <th>Log ID</th>
+                                    <th>User ID</th>
+                                    <th>Date</th>
+                                    <th>Mood</th>
+                                    <th>Stress Level</th>
+                                    <th>Sleep Hours</th>
+                                    <th>Notes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>LOG-001</td>
+                                    <td>USR-001</td>
+                                    <td>2023-10-15</td>
+                                    <td>Neutral</td>
+                                    <td>Medium</td>
+                                    <td>7.2</td>
+                                    <td>Feeling okay today</td>
+                                    <td class="action-buttons">
+                                        <button class="edit-btn">Edit</button>
+                                        <button class="delete-btn">Delete</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>LOG-002</td>
+                                    <td>USR-042</td>
+                                    <td>2023-10-15</td>
+                                    <td>Happy</td>
+                                    <td>Low</td>
+                                    <td>8.1</td>
+                                    <td>Had a great day with friends</td>
+                                    <td class="action-buttons">
+                                        <button class="edit-btn">Edit</button>
+                                        <button class="delete-btn">Delete</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>LOG-003</td>
+                                    <td>USR-017</td>
+                                    <td>2023-10-14</td>
+                                    <td>Sad</td>
+                                    <td>High</td>
+                                    <td>5.5</td>
+                                    <td>Struggling with work pressure</td>
+                                    <td class="action-buttons">
+                                        <button class="edit-btn">Edit</button>
+                                        <button class="delete-btn">Delete</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 3. Mood Analysis Section (Feature 2) -->
+            <div id="mood-analysis" class="dashboard-section">
+                <div class="header">
+                    <h2 id="page-title-mood-analysis">AI-Based Mood Analysis</h2>
+                </div>
+                <div class="welcome-card" style="background: linear-gradient(135deg, #6b8cbc, #4a6fa5);">
+                    <h3>AI-Based Question Answer & Mood Analysis</h3>
+                    <p>Using NLP and machine learning to analyze emotional tone and detect early signs of mental health issues.</p>
+                </div>
+                
+                <div class="cards-container">
+                    <div class="card">
+                        <h3><i class="fas fa-chart-line"></i> Mood Patterns (Last 30 Days)</h3>
+                        <div class="chart-container">
+                            <canvas id="moodPatternsChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3><i class="fas fa-fire"></i> Stress Triggers</h3>
+                        <div class="chart-container">
+                            <canvas id="stressTriggersChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-brain"></i> AI Sentiment Accuracy</h3>
+                    <div class="system-status">
+                        <div class="status-item">
+                            <div class="status-value status-good">92.4%</div>
+                            <div class="status-label">Sentiment Accuracy</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-value status-warning">85.6%</div>
+                            <div class="status-label">Crisis Recall</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-value status-good">4.7/5</div>
+                            <div class="status-label">User Feedback</div>
+                        </div>
+                    </div>
+                    <p>AI models are performing within acceptable parameters.</p>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-table"></i> AI Analysis Data</h3>
+                    <div class="table-actions">
+                        <input type="text" class="search-box" placeholder="Search analysis...">
+                        <button class="btn btn-primary"><i class="fas fa-plus"></i> Add New Analysis</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="feature-table">
+                            <thead>
+                                <tr>
+                                    <th>Analysis ID</th>
+                                    <th>User ID</th>
+                                    <th>Date</th>
+                                    <th>Sentiment Score</th>
+                                    <th>Detected Emotions</th>
+                                    <th>Risk Level</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>ANL-001</td>
+                                    <td>USR-001</td>
+                                    <td>2023-10-15</td>
+                                    <td>0.2</td>
+                                    <td>Neutral, Content</td>
+                                    <td class="risk-low">Low</td>
+                                    <td class="action-buttons">
+                                        <button class="edit-btn">Edit</button>
+                                        <button class="delete-btn">Delete</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>ANL-002</td>
+                                    <td>USR-042</td>
+                                    <td>2023-10-15</td>
+                                    <td>0.8</td>
+                                    <td>Happy, Excited</td>
+                                    <td class="risk-low">Low</td>
+                                    <td class="action-buttons">
+                                        <button class="edit-btn">Edit</button>
+                                        <button class="delete-btn">Delete</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>ANL-003</td>
+                                    <td>USR-017</td>
+                                    <td>2023-10-14</td>
+                                    <td>-0.6</td>
+                                    <td>Sad, Anxious</td>
+                                    <td class="risk-medium">Medium</td>
+                                    <td class="action-buttons">
+                                        <button class="edit-btn">Edit</button>
+                                        <button class="delete-btn">Delete</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 4. Recommendations Section (Feature 3) -->
+            <div id="recommendations" class="dashboard-section">
+                <div class="header">
+                    <h2 id="page-title-recommendations">Personalized Recommendations</h2>
+                </div>
+                <div class="welcome-card" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                    <h3>Personalized Mental Health Recommendations</h3>
+                    <p>Generate wellness suggestions based on user data to improve daily well-being and emotional resilience.</p>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-header">
+                        <div class="insight-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h4>System-Wide Recommendation Insight</h4>
+                        <span class="ai-tag">AI ANALYSIS</span>
+                    </div>
+                    <p>AI analysis suggests that users who receive a recommendation for a 'Mindfulness Session' within 24 hours of logging a 'High Stress' event show a 15% faster reduction in their average stress score over the following week.</p>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-list-check"></i> Recommendation Queue</h3>
+                    <ul class="recommendation-list">
+                        <li><i class="fas fa-check-circle"></i> <strong>Sarah Johnson:</strong> Recommend 'Mindfulness Session' (High Stress Log)</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Michael Chen:</strong> Recommend 'Sleep Hygiene Guide' (Low Sleep Score)</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>David Wilson:</strong> Recommend 'Doctor Check-in' (High Risk Score)</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>New User 101:</strong> Recommend 'Welcome Guide' (First Log)</li>
+                    </ul>
+                    <button class="btn btn-primary" style="margin-top: 15px;">Manage Recommendation Rules</button>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-table"></i> Recommendations Data</h3>
+                    <div class="table-actions">
+                        <input type="text" class="search-box" placeholder="Search recommendations...">
+                        <button class="btn btn-primary"><i class="fas fa-plus"></i> Add New Recommendation</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="feature-table">
+                            <thead>
+                                <tr>
+                                    <th>Rec ID</th>
+                                    <th>User ID</th>
+                                    <th>Date</th>
+                                    <th>Recommendation Type</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>REC-001</td>
+                                    <td>USR-001</td>
+                                    <td>2023-10-15</td>
+                                    <td>Meditation</td>
+                                    <td>10-minute breathing exercise</td>
+                                    <td>Pending</td>
+                                    <td class="action-buttons">
+                                        <button class="edit-btn">Edit</button>
+                                        <button class="delete-btn">Delete</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>REC-002</td>
+                                    <td>USR-042</td>
+                                    <td>2023-10-15</td>
+                                    <td>Activity</td>
+                                    <td>Social gathering with friends</td>
+                                    <td>Completed</td>
+                                    <td class="action-buttons">
+                                        <button class="edit-btn">Edit</button>
+                                        <button class="delete-btn">Delete</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>REC-003</td>
+                                    <td>USR-017</td>
+                                    <td>2023-10-14</td>
+                                    <td>Therapy</td>
+                                    <td>Schedule session with counselor</td>
+                                    <td>Pending</td>
+                                    <td class="action-buttons">
+                                        <button class="edit-btn">Edit</button>
+                                        <button class="delete-btn">Delete</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 5. Counsellor Management Section (Feature 4) -->
+            <div id="counsellor-management" class="dashboard-section">
+                <div class="header">
+                    <h2 id="page-title-counsellor-management">Counsellor & Session Management</h2>
+                </div>
+                <div class="welcome-card" style="background: linear-gradient(135deg, #ff6b6b, #ff8e8e);">
+                    <h3>Counsellor & Session Management</h3>
+                    <p>Connect users with licensed counsellors for therapy sessions and manage schedules.</p>
+                </div>
+                
+                <div class="cards-container">
+                    <div class="card">
+                        <h3><i class="fas fa-calendar-check"></i> Today's Sessions</h3>
+                        <div class="log-entry" style="border-left-color: var(--primary);">
+                            <div class="log-time">10:00 AM - Sarah Johnson</div>
+                            <div class="log-details">
+                                <span>Video Session</span>
+                                <span>Dr. Watson</span>
+                            </div>
+                        </div>
+                        <div class="log-entry" style="border-left-color: var(--primary);">
+                            <div class="log-time">2:30 PM - Michael Chen</div>
+                            <div class="log-details">
+                                <span>In-Person</span>
+                                <span>Dr. Green</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3><i class="fas fa-chart-bar"></i> Session Volume</h3>
+                        <div class="system-status">
+                            <div class="status-item">
+                                <div class="status-value">284</div>
+                                <div class="status-label">This Month</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-value status-good">+15%</div>
+                                <div class="status-label">vs Last Month</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-value">92%</div>
+                                <div class="status-label">Attendance Rate</div>
+                            </div>
+                        </div>
+                        <p>Total sessions booked across all doctors and clinics.</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-table"></i> Counsellor Data</h3>
+                    <div class="table-actions">
+                        <input type="text" class="search-box" placeholder="Search counsellors...">
+                        <button class="btn btn-primary"><i class="fas fa-plus"></i> Add New Counsellor</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="feature-table">
+                            <thead>
+                                <tr>
+                                    <th>Counsellor ID</th>
+                                    <th>Name</th>
+                                    <th>Specialization</th>
+                                    <th>Contact</th>
+                                    <th>Availability</th>
+                                    <th>Active Sessions</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>COUN-001</td>
+                                    <td>Dr. Sarah Johnson</td>
+                                    <td>Anxiety & Depression</td>
+                                    <td>sarah.j@example.com</td>
+                                    <td>Mon, Wed, Fri</td>
+                                    <td>12</td>
+                                    <td class="action-buttons">
+                                        <button class="edit-btn">Edit</button>
+                                        <button class="delete-btn">Delete</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>COUN-002</td>
+                                    <td>Dr. Michael Chen</td>
+                                    <td>Trauma & PTSD</td>
+                                    <td>m.chen@example.com</td>
+                                    <td>Tue, Thu, Sat</td>
+                                    <td>8</td>
+                                    <td class="action-buttons">
+                                        <button class="edit-btn">Edit</button>
+                                        <button class="delete-btn">Delete</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>COUN-003</td>
+                                    <td>Dr. Emily Rodriguez</td>
+                                    <td>Relationship Counseling</td>
+                                    <td>e.rodriguez@example.com</td>
+                                    <td>Mon-Fri</td>
+                                    <td>15</td>
+                                    <td class="action-buttons">
+                                        <button class="edit-btn">Edit</button>
+                                        <button class="delete-btn">Delete</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 6. Progress Tracking Section (Feature 5) -->
+            <div id="progress-tracking" class="dashboard-section">
+                <div class="header">
+                    <h2 id="page-title-progress-tracking">Progress Tracking</h2>
+                </div>
+                <div class="welcome-card" style="background: linear-gradient(135deg, #ffc107, #ffd54f);">
+                    <h3>Counsellor Feedback & Progress Tracking</h3>
+                    <p>Track counselling outcomes, feedback, and patient progress over multiple sessions.</p>
+                </div>
+                
+                <div class="cards-container">
+                    <div class="card">
+                        <h3><i class="fas fa-chart-line"></i> Patient Improvement</h3>
+                        <div class="system-status">
+                            <div class="status-item">
+                                <div class="status-value status-good">72%</div>
+                                <div class="status-label">Improved Outcomes</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-value status-warning">23%</div>
+                                <div class="status-label">Stable</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-value status-danger">5%</div>
+                                <div class="status-label">Declined</div>
+                            </div>
+                        </div>
+                        <p>Overall progress of active patients based on AI metrics.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3><i class="fas fa-user-md"></i> Doctor Performance</h3>
+                        <div class="system-status">
+                            <div class="status-item">
+                                <div class="status-value status-good">4.7/5</div>
+                                <div class="status-label">Avg. Rating</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-value status-warning">120%</div>
+                                <div class="status-label">Highest Workload</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-value status-good">87%</div>
+                                <div class="status-label">Retention Rate</div>
+                            </div>
+                        </div>
+                        <p>Key performance indicators for all active doctors.</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-table"></i> Progress Tracking Data</h3>
+                    <div class="table-actions">
+                        <input type="text" class="search-box" placeholder="Search progress...">
+                        <button class="btn btn-primary"><i class="fas fa-plus"></i> Add New Progress</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="feature-table">
+                            <thead>
+                                <tr>
+                                    <th>Progress ID</th>
+                                    <th>User ID</th>
+                                    <th>Session ID</th>
+                                    <th>Improvement Score</th>
+                                    <th>Emotional Stability</th>
+                                    <th>Notes</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>PROG-001</td>
+                                    <td>USR-001</td>
+                                    <td>SES-015</td>
+                                    <td class="risk-low">+12%</td>
+                                    <td class="risk-low">Stable</td>
+                                    <td>Showing good progress</td>
+                                    <td>2023-10-15</td>
+                                    <td class="action-buttons">
+                                        <button class="edit-btn">Edit</button>
+                                        <button class="delete-btn">Delete</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>PROG-002</td>
+                                    <td>USR-042</td>
+                                    <td>SES-023</td>
+                                    <td class="risk-low">+8%</td>
+                                    <td class="risk-low">Improving</td>
+                                    <td>Responding well to therapy</td>
+                                    <td>2023-10-14</td>
+                                    <td class="action-buttons">
+                                        <button class="edit-btn">Edit</button>
+                                        <button class="delete-btn">Delete</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>PROG-003</td>
+                                    <td>USR-017</td>
+                                    <td>SES-008</td>
+                                    <td class="risk-high">-5%</td>
+                                    <td class="risk-high">Volatile</td>
+                                    <td>Needs additional support</td>
+                                    <td>2023-10-13</td>
+                                    <td class="action-buttons">
+                                        <button class="edit-btn">Edit</button>
+                                        <button class="delete-btn">Delete</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 7. Crisis Detection Section (Feature 6) -->
+            <div id="crisis-detection" class="dashboard-section">
+                <div class="header">
+                    <h2 id="page-title-crisis-detection">Crisis Detection & Emergency Support</h2>
+                </div>
+                <div class="welcome-card" style="background: linear-gradient(135deg, #dc3545, #e74c3c);">
+                    <h3>Crisis Detection & Emergency Support</h3>
+                    <p>AI predictions combined with real-time user data to identify mental health emergencies and provide immediate help.</p>
+                </div>
+                
+                <div class="cards-container">
+                    <div class="card">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Active Alerts</h3>
+                        <div class="alert-item" style="border-left-color: var(--danger);">
+                            <div class="alert-header">
+                                <div class="alert-title">Sarah Johnson</div>
+                                <div class="alert-risk risk-high">HIGH RISK</div>
+                            </div>
+                            <div class="log-details">
+                                <span>Trigger: Multiple distress signals</span>
+                                <span>5 min ago</span>
+                            </div>
+                        </div>
+                        <div class="alert-item" style="border-left-color: var(--warning);">
+                            <div class="alert-header">
+                                <div class="alert-title">Michael Chen</div>
+                                <div class="alert-risk risk-medium">MEDIUM RISK</div>
+                            </div>
+                            <div class="log-details">
+                                <span>Trigger: Journal entry with concerning content</span>
+                                <span>12 min ago</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3><i class="fas fa-users"></i> On-Call Counselors</h3>
+                        <div class="log-entry" style="border-left-color: var(--success);">
+                            <div class="log-time">Dr. Emily Watson</div>
+                            <div class="log-details">
+                                <span class="status-good">Available</span>
+                                <span>Crisis Intervention</span>
+                            </div>
+                        </div>
+                        <div class="log-entry" style="border-left-color: var(--success);">
+                            <div class="log-time">Dr. Marcus Green</div>
+                            <div class="log-details">
+                                <span class="status-good">Available</span>
+                                <span>Psychiatrist</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" style="width: 100%; margin-top: 10px;">View All Resources</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-tachometer-alt"></i> Response Time Metrics</h3>
+                    <div class="system-status">
+                        <div class="status-item">
+                            <div class="status-value status-good">4.2 min</div>
+                            <div class="status-label">Avg. First Contact</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-value status-good">22 min</div>
+                            <div class="status-label">Avg. Resolution</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-value status-good">94%</div>
+                            <div class="status-label">Success Rate</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-table"></i> Crisis Detection Data</h3>
+                    <div class="table-actions">
+                        <input type="text" class="search-box" placeholder="Search alerts...">
+                        <button class="btn btn-primary"><i class="fas fa-plus"></i> Add New Alert</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="feature-table">
+                            <thead>
+                                <tr>
+                                    <th>Alert ID</th>
+                                    <th>User ID</th>
+                                    <th>Date & Time</th>
+                                    <th>Risk Level</th>
+                                    <th>Trigger</th>
+                                    <th>Action Taken</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>ALRT-001</td>
+                                    <td>USR-089</td>
+                                    <td>2023-10-15 14:32</td>
+                                    <td class="risk-high">High</td>
+                                    <td>Severe anxiety indicators</td>
+                                    <td>Counsellor notified</td>
+                                    <td>Resolved</td>
+                                    <td class="action-buttons">
+                                        <button class="edit-btn">Edit</button>
+                                        <button class="delete-btn">Delete</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>ALRT-002</td>
+                                    <td>USR-017</td>
+                                    <td>2023-10-14 21:15</td>
+                                    <td class="risk-high">Critical</td>
+                                    <td>Suicidal ideation detected</td>
+                                    <td>Emergency contact called</td>
+                                    <td>Ongoing</td>
+                                    <td class="action-buttons">
+                                        <button class="edit-btn">Edit</button>
+                                        <button class="delete-btn">Delete</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>ALRT-003</td>
+                                    <td>USR-056</td>
+                                    <td>2023-10-13 10:45</td>
+                                    <td class="risk-medium">Medium</td>
+                                    <td>Depression symptoms worsening</td>
+                                    <td>Support resources sent</td>
+                                    <td>Resolved</td>
+                                    <td class="action-buttons">
+                                        <button class="edit-btn">Edit</button>
+                                        <button class="delete-btn">Delete</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const dashboardSections = document.querySelectorAll('.dashboard-section');
+            const pageTitle = document.getElementById('page-title');
+            
+            function showDashboard(targetId) {
+                dashboardSections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                    
+                    // Update main header title
+                    const titleElement = document.getElementById('page-title-' + targetId) || document.getElementById('page-title');
+                    if (titleElement) {
+                        pageTitle.textContent = titleElement.textContent;
+                    } else {
+                        // Fallback for sections without a specific h2 in the section
+                        const linkText = document.querySelector(`.nav-link[data-target="${targetId}"]`).textContent.trim();
+                        pageTitle.textContent = linkText;
+                    }
+                }
+                
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('data-target') === targetId) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('data-target');
+                    showDashboard(targetId);
+                });
+            });
+            
+            // Initialize Charts (Placeholder for actual chart logic)
+            function createChart(ctx, type, labels, data, label, colors) {
+                new Chart(ctx, {
+                    type: type,
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: label,
+                            data: data,
+                            backgroundColor: colors || (type === 'bar' ? 'rgba(44, 62, 80, 0.7)' : 'rgba(44, 62, 80, 0.5)'),
+                            borderColor: 'rgb(44, 62, 80)',
+                            borderWidth: 1,
+                            fill: type === 'line'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            // System Overview Chart
+            const apiUsageCtx = document.getElementById('apiUsageChart');
+            if (apiUsageCtx) {
+                createChart(apiUsageCtx, 'line', ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], [120, 150, 130, 180, 160, 200, 170], 'API Calls (Thousands)');
+            }
+            
+            // Mood Analysis Charts
+            const moodPatternsCtx = document.getElementById('moodPatternsChart');
+            if (moodPatternsCtx) {
+                createChart(moodPatternsCtx, 'line', ['W1', 'W2', 'W3', 'W4'], [6.5, 7.0, 7.2, 6.9], 'Avg. Mood Score', 'rgba(74, 111, 165, 0.5)');
+            }
+            
+            const stressTriggersCtx = document.getElementById('stressTriggersChart');
+            if (stressTriggersCtx) {
+                createChart(stressTriggersCtx, 'bar', ['Work', 'Family', 'Health', 'Finance'], [45, 30, 15, 10], 'Stress Trigger Count', ['#dc3545', '#ffc107', '#4a6fa5', '#28a745']);
+            }
+
+            // Search functionality
+            document.querySelectorAll('.search-box').forEach(box => {
+                box.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const table = this.closest('.card').querySelector('tbody');
+                    if (!table) return;
+                    
+                    const rows = table.querySelectorAll('tr');
+                    
+                    rows.forEach(row => {
+                        const text = row.textContent.toLowerCase();
+                        if (text.includes(searchTerm)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            // Edit and Delete buttons functionality
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    alert('Edit functionality would be implemented here');
+                });
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (confirm('Are you sure you want to delete this record?')) {
+                        this.closest('tr').remove();
+                    }
+                });
+            });
+
+            // Add New buttons functionality
+            document.querySelectorAll('.btn-primary').forEach(button => {
+                if (button.textContent.includes('Add New')) {
+                    button.addEventListener('click', function() {
+                        alert('Add New functionality would be implemented here');
+                    });
+                }
+            });
+
+            // Initial load
+            showDashboard('overview');
+        });
+    </script>
+</body>
+</html>

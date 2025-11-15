@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindCare AI - Secure Login Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4a6fa5;
+            --secondary: #6b8cbc;
+            --accent: #ff6b6b;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --patient: #4a6fa5;
+            --doctor: #28a745;
+            --insurance: #ffc107;
+            --clinic: #6f42c1;
+            --analyst: #17a2b8;
+            --emergency: #dc3545;
+            --admin: #343a40;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .welcome-section {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .welcome-section h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .welcome-section p {
+            margin-bottom: 30px;
+            opacity: 0.9;
+            font-size: 16px;
+        }
+        
+        .features-list {
+            list-style: none;
+        }
+        
+        .features-list li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .features-list i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        .login-section {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo i {
+            font-size: 32px;
+            margin-right: 10px;
+            color: var(--primary);
+        }
+        
+        .logo h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .role-selector {
+            margin-bottom: 25px;
+        }
+        
+        .role-selector h3 {
+            margin-bottom: 15px;
+            color: var(--dark);
+            font-weight: 600;
+        }
+        
+        .role-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        
+        .role-btn {
+            background-color: var(--light);
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            padding: 12px 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .role-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .role-btn.active {
+            border-color: var(--primary);
+            background-color: rgba(74, 111, 165, 0.1);
+        }
+        
+        .role-btn.patient.active {
+            border-color: var(--patient);
+            background-color: rgba(74, 111, 165, 0.1);
+        }
+        
+        .role-btn.doctor.active {
+            border-color: var(--doctor);
+            background-color: rgba(40, 167, 69, 0.1);
+        }
+        
+        .role-btn.insurance.active {
+            border-color: var(--insurance);
+            background-color: rgba(255, 193, 7, 0.1);
+        }
+        
+        .role-btn.clinic.active {
+            border-color: var(--clinic);
+            background-color: rgba(111, 66, 193, 0.1);
+        }
+        
+        .role-btn.analyst.active {
+            border-color: var(--analyst);
+            background-color: rgba(23, 162, 184, 0.1);
+        }
+        
+        .role-btn.emergency.active {
+            border-color: var(--emergency);
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+        
+        .role-btn.admin.active {
+            border-color: var(--admin);
+            background-color: rgba(52, 58, 64, 0.1);
+        }
+        
+        .role-icon {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .patient .role-icon { color: var(--patient); }
+        .doctor .role-icon { color: var(--doctor); }
+        .insurance .role-icon { color: var(--insurance); }
+        .clinic .role-icon { color: var(--clinic); }
+        .analyst .role-icon { color: var(--analyst); }
+        .emergency .role-icon { color: var(--emergency); }
+        .admin .role-icon { color: var(--admin); }
+        
+        .login-form {
+            margin-top: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.2);
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+        }
+        
+        .options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+        }
+        
+        .remember-me input {
+            margin-right: 8px;
+        }
+        
+        .forgot-password {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+        
+        .btn-login {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .btn-login:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 111, 165, 0.3);
+        }
+        
+        .patient .btn-login { background-color: var(--patient); }
+        .doctor .btn-login { background-color: var(--doctor); }
+        .insurance .btn-login { background-color: var(--insurance); color: var(--dark); }
+        .clinic .btn-login { background-color: var(--clinic); }
+        .analyst .btn-login { background-color: var(--analyst); }
+        .emergency .btn-login { background-color: var(--emergency); }
+        .admin .btn-login { background-color: var(--admin); }
+        
+        .patient .btn-login:hover { background-color: #3a5a8a; }
+        .doctor .btn-login:hover { background-color: #218838; }
+        .insurance .btn-login:hover { background-color: #e0a800; }
+        .clinic .btn-login:hover { background-color: #5a36a3; }
+        .analyst .btn-login:hover { background-color: #138496; }
+        .emergency .btn-login:hover { background-color: #c82333; }
+        .admin .btn-login:hover { background-color: #23272b; }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+        }
+        
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .divider span {
+            padding: 0 15px;
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        .sos-container {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: rgba(220, 53, 69, 0.05);
+            border: 1px solid rgba(220, 53, 69, 0.2);
+        }
+        
+        .sos-button {
+            background-color: var(--emergency);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 0 rgba(220, 53, 69, 0.4);
+            animation: pulse 2s infinite;
+        }
+        
+        .sos-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 15px rgba(220, 53, 69, 0.4);
+        }
+        
+        .sos-button i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(220, 53, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
+        
+        .emergency-info {
+            margin-top: 15px;
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .emergency-contacts {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        .emergency-contacts a {
+            color: var(--emergency);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .emergency-contacts a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .login-container {
+                flex-direction: column;
+            }
+            
+            .welcome-section {
+                padding: 30px;
+            }
+            
+            .role-buttons {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .role-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .welcome-section h1 {
+                font-size: 28px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .login-container {
+                border-radius: 10px;
+            }
+            
+            .welcome-section, .login-section {
+                padding: 25px;
+            }
+            
+            .role-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h1>Welcome to MindCare AI</h1>
+            <p>Your comprehensive mental health monitoring and support platform. Access personalized tools and resources based on your role.</p>
+            
+            <ul class="features-list">
+                <li><i class="fas fa-check-circle"></i> AI-Powered Mood Analysis</li>
+                <li><i class="fas fa-check-circle"></i> Personalized Mental Health Recommendations</li>
+                <li><i class="fas fa-check-circle"></i> Secure Session Management</li>
+                <li><i class="fas fa-check-circle"></i> Crisis Detection & Emergency Support</li>
+                <li><i class="fas fa-check-circle"></i> Progress Tracking & Analytics</li>
+            </ul>
+        </div>
+        
+        <!-- Login Section -->
+        <div class="login-section">
+            <div class="logo">
+                <i class="fas fa-brain"></i>
+                <h2>MindCare AI</h2>
+            </div>
+            
+            <div class="role-selector">
+                <h3>Select Your Role</h3>
+                <div class="role-buttons">
+                    <div class="role-btn patient active" data-role="patient">
+                        <div class="role-icon"><i class="fas fa-user"></i></div>
+                        <div>Patient</div>
+                    </div>
+                    <div class="role-btn doctor" data-role="doctor">
+                        <div class="role-icon"><i class="fas fa-user-md"></i></div>
+                        <div>Doctor</div>
+                    </div>
+                    <div class="role-btn insurance" data-role="insurance">
+                        <div class="role-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                        <div>Insurance</div>
+                    </div>
+                    <div class="role-btn clinic" data-role="clinic">
+                        <div class="role-icon"><i class="fas fa-clinic-medical"></i></div>
+                        <div>Clinic</div>
+                    </div>
+                    <div class="role-btn analyst" data-role="analyst">
+                        <div class="role-icon"><i class="fas fa-chart-bar"></i></div>
+                        <div>Analyst</div>
+                    </div>
+                    <div class="role-btn emergency" data-role="emergency">
+                        <div class="role-icon"><i class="fas fa-life-ring"></i></div>
+                        <div>Emergency SOS</div>
+                    </div>
+                    <div class="role-btn admin" data-role="admin">
+                        <div class="role-icon"><i class="fas fa-cogs"></i></div>
+                        <div>Admin</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="login-form">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="password-container">
+                            <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+                            <button type="button" class="toggle-password" id="togglePassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="options">
+                        <div class="remember-me">
+                            <input type="checkbox" id="remember">
+                            <label for="remember">Remember me</label>
+                        </div>
+                        <a href="#" class="forgot-password">Forgot password?</a>
+                    </div>
+                    
+                    <button type="submit" class="btn-login">Login to MindCare AI</button>
+                </form>
+                
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+                
+                <div class="sos-container">
+                    <p>In crisis? Get immediate help</p>
+                    <button class="sos-button" id="sosTrigger">
+                        <i class="fas fa-exclamation-triangle"></i> EMERGENCY SOS
+                    </button>
+                    <div class="emergency-info">
+                        Connects you directly to crisis support
+                    </div>
+                    <div class="emergency-contacts">
+                        <a href="tel:1-800-273-8255">National Suicide Prevention Lifeline: 1-800-273-8255</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Role selection functionality
+        document.querySelectorAll('.role-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.role-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Update login section class for role-specific styling
+                const role = this.getAttribute('data-role');
+                document.querySelector('.login-section').className = `login-section ${role}`;
+                
+                // Update button text based on role
+                const loginButton = document.querySelector('.btn-login');
+                loginButton.textContent = `Login as ${role.charAt(0).toUpperCase() + role.slice(1)}`;
+            });
+        });
+        
+        // Toggle password visibility
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+        
+        // Form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const role = document.querySelector('.role-btn.active').getAttribute('data-role');
+            
+            // Simple validation
+            if (!email || !password) {
+                alert('Please enter both email and password.');
+                return;
+            }
+            
+            // In a real application, this would connect to an authentication service
+            alert(`Login attempt for ${email} as ${role}. In a real application, this would authenticate with the server.`);
+            
+            // For demo purposes, simulate successful login
+            // window.location.href = `${role}-dashboard.html`;
+        });
+        
+        // SOS button functionality
+        document.getElementById('sosTrigger').addEventListener('click', function() {
+            if (confirm('This will immediately connect you with a crisis counselor. Are you sure you want to continue?')) {
+                alert('Connecting you with a crisis counselor now...\n\nIf this is a real emergency, please call 911 or your local emergency number.');
+                // In a real application, this would trigger an emergency protocol
+            }
+        });
+        
+        // Forgot password link
+        document.querySelector('.forgot-password').addEventListener('click', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            if (email) {
+                alert(`Password reset instructions have been sent to ${email}`);
+            } else {
+                alert('Please enter your email address to reset your password.');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindCare AI - Insurance Analytics Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #3498db;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --gray: #7f8c8d;
+            --insurance-blue: #2980b9;
+            --insurance-green: #16a085;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: 20px;
+        }
+        
+        .logo h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+        }
+        
+        .nav-links {
+            list-style: none;
+            padding: 0 10px;
+        }
+        
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 5px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .nav-links i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .user-info {
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            margin-top: 20px;
+        }
+        
+        .user-info img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .filter-group label {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 14px;
+        }
+        
+        select, button {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            font-size: 14px;
+        }
+        
+        button {
+            background: var(--insurance-blue);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        button:hover {
+            background: #2471a3;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .card h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .metric-card {
+            text-align: center;
+            padding: 30px 20px;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        
+        .metric-card i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .data-table th, .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .data-table th {
+            background: var(--light);
+            font-weight: 600;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-good { background: var(--success); }
+        .status-warning { background: var(--warning); }
+        .status-danger { background: var(--danger); }
+        
+        .kpi-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .kpi-positive { background: #d5f4e6; color: var(--success); }
+        .kpi-negative { background: #fdebd0; color: var(--warning); }
+        
+        .insurance-metric {
+            border-left: 4px solid var(--insurance-blue);
+            padding-left: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+            }
+            
+            .filters {
+                flex-direction: column;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <h2><i class="fas fa-shield-alt"></i> MindCare Insurance Portal</h2>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" class="active" data-tab="population-overview"><i class="fas fa-users"></i> Population Overview</a></li>
+                <li><a href="#" data-tab="treatment-efficacy"><i class="fas fa-stethoscope"></i> Treatment Efficacy</a></li>
+                <li><a href="#" data-tab="risk-stratification"><i class="fas fa-chart-line"></i> Risk Stratification</a></li>
+                <li><a href="#" data-tab="claims-utilization"><i class="fas fa-file-invoice-dollar"></i> Claims & Utilization</a></li>
+                <li><a href="#" data-tab="roi-analytics"><i class="fas fa-chart-bar"></i> ROI Analytics</a></li>
+                <li><a href="#" data-tab="cost-savings"><i class="fas fa-money-bill-wave"></i> Cost Savings</a></li>
+                <li><a href="#" data-tab="provider-performance"><i class="fas fa-user-md"></i> Provider Performance</a></li>
+            </ul>
+            <div class="user-info">
+                <div style="display: flex; align-items: center;">
+                    <img src="https://i.pravatar.cc/150?img=32" alt="Rocket Chen">
+                    <div>
+                        <div style="font-weight: 600;">Rocket Chen</div>
+                        <small style="opacity: 0.8;">Insurance Analyst</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <h1 id="page-title">Population Health Overview</h1>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="display: flex; align-items: center; background: white; padding: 8px 15px; border-radius: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <div class="status-indicator status-good"></div>
+                        <span>Q3 2024 Report</span>
+                    </div>
+                    <button onclick="generateReport()"><i class="fas fa-download"></i> Export Report</button>
+                </div>
+            </div>
+
+            <!-- Population Overview Tab -->
+            <div class="tab-content active" id="population-overview">
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Time Period:</label>
+                        <select id="timePeriod">
+                            <option>Q3 2024</option>
+                            <option>Q2 2024</option>
+                            <option>Q1 2024</option>
+                            <option>Full Year 2023</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Plan Type:</label>
+                        <select id="planType">
+                            <option>All Plans</option>
+                            <option>Employer Group</option>
+                            <option>Individual</option>
+                            <option>Medicare Advantage</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Region:</label>
+                        <select id="region">
+                            <option>National</option>
+                            <option>Northeast</option>
+                            <option>South</option>
+                            <option>Midwest</option>
+                            <option>West</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; align-items: end;">
+                        <button onclick="refreshData()"><i class="fas fa-sync-alt"></i> Refresh Data</button>
+                    </div>
+                </div>
+
+                <!-- Member Overview Metrics -->
+                <div class="dashboard-grid">
+                    <div class="card metric-card insurance-metric">
+                        <i class="fas fa-users" style="color: var(--insurance-blue);"></i>
+                        <div class="metric-value">2,847</div>
+                        <div>Total Members</div>
+                        <small style="color: var(--success);">+3.2% from last quarter</small>
+                    </div>
+                    <div class="card metric-card insurance-metric">
+                        <i class="fas fa-heartbeat" style="color: var(--insurance-green);"></i>
+                        <div class="metric-value">412</div>
+                        <div>Active in Program</div>
+                        <small style="color: var(--success);">+8% program adoption</small>
+                    </div>
+                    <div class="card metric-card insurance-metric">
+                        <i class="fas fa-chart-line" style="color: var(--accent);"></i>
+                        <div class="metric-value">14.5%</div>
+                        <div>Engagement Rate</div>
+                        <small style="color: var(--success);">Above 12% target</small>
+                    </div>
+                    <div class="card metric-card insurance-metric">
+                        <i class="fas fa-clipboard-check" style="color: var(--success);"></i>
+                        <div class="metric-value">76%</div>
+                        <div>Satisfaction Score</div>
+                        <small style="color: var(--success);">+5% from baseline</small>
+                    </div>
+                </div>
+
+                <!-- Program Performance -->
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3><i class="fas fa-brain"></i> Mental Health Program Adoption</h3>
+                        <div class="chart-container">
+                            <canvas id="adoptionChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-map-marker-alt"></i> Regional Distribution</h3>
+                        <div class="chart-container">
+                            <canvas id="regionalChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Demographic Insights -->
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3><i class="fas fa-user-friends"></i> Age Group Distribution</h3>
+                        <div class="chart-container">
+                            <canvas id="ageChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-briefcase"></i> Employment Status</h3>
+                        <div class="chart-container">
+                            <canvas id="employmentChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Treatment Efficacy Tab -->
+            <div class="tab-content" id="treatment-efficacy">
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Treatment Type:</label>
+                        <select>
+                            <option>All Treatments</option>
+                            <option>Therapy Sessions</option>
+                            <option>Medication Management</option>
+                            <option>Crisis Intervention</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Outcome Measure:</label>
+                        <select>
+                            <option>PHQ-9 Scores</option>
+                            <option>GAD-7 Scores</option>
+                            <option>Functional Improvement</option>
+                            <option>Quality of Life</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card metric-card">
+                        <div class="metric-value" style="color: var(--success);">42%</div>
+                        <div>Avg. Symptom Reduction</div>
+                        <small>Across all treatments</small>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="metric-value" style="color: var(--insurance-green);">3.2</div>
+                        <div>Avg. PHQ-9 Improvement</div>
+                        <small>Depression scale</small>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="metric-value" style="color: var(--accent);">78%</div>
+                        <div>Treatment Completion</div>
+                        <small>Program adherence</small>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="metric-value" style="color: var(--success);">2.8x</div>
+                        <div>Recovery Rate</div>
+                        <small>vs. standard care</small>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fas fa-stethoscope"></i> Treatment Outcomes Over Time</h3>
+                    <div class="chart-container">
+                        <canvas id="treatmentChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3><i class="fas fa-pills"></i> Medication Effectiveness</h3>
+                        <div class="chart-container">
+                            <canvas id="medicationChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-comments"></i> Therapy Session Impact</h3>
+                        <div class="chart-container">
+                            <canvas id="therapyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Stratification Tab -->
+            <div class="tab-content" id="risk-stratification">
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Risk Model:</label>
+                        <select>
+                            <option>AI Predictive Model v2.1</option>
+                            <option>Clinical Assessment</option>
+                            <option>Claims-based Risk</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Risk Level:</label>
+                        <select>
+                            <option>All Levels</option>
+                            <option>High Risk</option>
+                            <option>Medium Risk</option>
+                            <option>Low Risk</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card metric-card">
+                        <div class="metric-value" style="color: var(--danger);">18%</div>
+                        <div>High Risk Members</div>
+                        <small>Require intervention</small>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="metric-value" style="color: var(--warning);">35%</div>
+                        <div>Medium Risk</div>
+                        <small>Monitoring required</small>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="metric-value" style="color: var(--success);">47%</div>
+                        <div>Low Risk</div>
+                        <small>Maintenance care</small>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="metric-value" style="color: var(--accent);">89%</div>
+                        <div>Model Accuracy</div>
+                        <small>Risk prediction</small>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fas fa-chart-line"></i> Risk Distribution & Trends</h3>
+                    <div class="chart-container">
+                        <canvas id="riskChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3><i class="fas fa-exclamation-triangle"></i> High Risk Member Profile</h3>
+                        <div class="chart-container">
+                            <canvas id="highRiskChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-project-diagram"></i> Risk Factor Correlation</h3>
+                        <div class="chart-container">
+                            <canvas id="correlationChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Claims & Utilization Tab -->
+            <div class="tab-content" id="claims-utilization">
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Service Category:</label>
+                        <select>
+                            <option>All Services</option>
+                            <option>Inpatient</option>
+                            <option>Outpatient</option>
+                            <option>Pharmacy</option>
+                            <option>Emergency</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Cost Type:</label>
+                        <select>
+                            <option>Total Cost</option>
+                            <option>Per Member Cost</option>
+                            <option>Utilization Rate</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card metric-card">
+                        <div class="metric-value" style="color: var(--insurance-blue);">$2.8M</div>
+                        <div>Total Mental Health Claims</div>
+                        <small>Current quarter</small>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="metric-value" style="color: var(--success);">-12%</div>
+                        <div>Cost Reduction</div>
+                        <small>vs. previous quarter</small>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="metric-value" style="color: var(--accent);">3.2</div>
+                        <div>Avg. Claims per Member</div>
+                        <small>Utilization rate</small>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="metric-value" style="color: var(--warning);">$984</div>
+                        <div>PMPM Cost</div>
+                        <small>Per member per month</small>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fas fa-file-invoice-dollar"></i> Claims Trend Analysis</h3>
+                    <div class="chart-container">
+                        <canvas id="claimsChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3><i class="fas fa-procedures"></i> Service Utilization by Type</h3>
+                        <div class="chart-container">
+                            <canvas id="utilizationChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-money-bill-wave"></i> Cost Distribution</h3>
+                        <div class="chart-container">
+                            <canvas id="costChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROI Analytics Tab -->
+            <div class="tab-content" id="roi-analytics">
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>ROI Period:</label>
+                        <select>
+                            <option>Q3 2024</option>
+                            <option>Year to Date</option>
+                            <option>Last 12 Months</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Cost Category:</label>
+                        <select>
+                            <option>All Categories</option>
+                            <option>Medical Costs</option>
+                            <option>Productivity</option>
+                            <option>Program Costs</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card metric-card">
+                        <div class="metric-value" style="color: var(--success);">3.2:1</div>
+                        <div>Overall ROI</div>
+                        <small>Return on investment</small>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="metric-value" style="color: var(--insurance-green);">$1.4M</div>
+                        <div>Total Savings</div>
+                        <small>Year to date</small>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="metric-value" style="color: var(--accent);">18%</div>
+                        <div>Medical Cost Reduction</div>
+                        <small>For program participants</small>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="metric-value" style="color: var(--success);">$3,250</div>
+                        <div>Savings per Member</div>
+                        <small>Annual estimate</small>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fas fa-chart-bar"></i> ROI Breakdown by Category</h3>
+                    <div class="chart-container">
+                        <canvas id="roiChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3><i class="fas fa-calendar-alt"></i> ROI Trend Over Time</h3>
+                        <div class="chart-container">
+                            <canvas id="roiTrendChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-balance-scale"></i> Cost-Benefit Analysis</h3>
+                        <div class="chart-container">
+                            <canvas id="costBenefitChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Tabs for Missing Features -->
+            <div class="tab-content" id="cost-savings">
+                <div class="card">
+                    <h3><i class="fas fa-money-bill-wave"></i> Cost Savings Analysis</h3>
+                    <div class="dashboard-grid">
+                        <div class="card metric-card">
+                            <div class="metric-value" style="color: var(--success);">$2.1M</div>
+                            <div>Total Medical Savings</div>
+                            <small>Year to date</small>
+                        </div>
+                        <div class="card metric-card">
+                            <div class="metric-value" style="color: var(--insurance-green);">$865K</div>
+                            <div>Pharmacy Savings</div>
+                            <small>Medication optimization</small>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="savingsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="provider-performance">
+                <div class="card">
+                    <h3><i class="fas fa-user-md"></i> Provider Performance Metrics</h3>
+                    <div class="dashboard-grid">
+                        <div class="card metric-card">
+                            <div class="metric-value" style="color: var(--success);">4.2/5</div>
+                            <div>Avg. Provider Rating</div>
+                            <small>Member satisfaction</small>
+                        </div>
+                        <div class="card metric-card">
+                            <div class="metric-value" style="color: var(--accent);">92%</div>
+                            <div>Treatment Adherence</div>
+                            <small>Provider compliance</small>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="providerChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab Navigation
+        document.querySelectorAll('.nav-links a').forEach(tab => {
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Update active tab
+                document.querySelectorAll('.nav-links a').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update page title
+                const tabNames = {
+                    'population-overview': 'Population Health Overview',
+                    'treatment-efficacy': 'Treatment Efficacy Analytics',
+                    'risk-stratification': 'Risk Stratification Analysis',
+                    'claims-utilization': 'Claims & Utilization Analytics',
+                    'roi-analytics': 'ROI & Financial Analytics',
+                    'cost-savings': 'Cost Savings Analysis',
+                    'provider-performance': 'Provider Performance Metrics'
+                };
+                document.getElementById('page-title').textContent = tabNames[this.getAttribute('data-tab')];
+                
+                // Show selected content
+                const tabId = this.getAttribute('data-tab');
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Insurance-specific Functions
+        function generateReport() {
+            alert('Generating insurance analytics report...');
+            // In real implementation, this would generate PDF/Excel reports
+        }
+
+        function refreshData() {
+            alert('Refreshing insurance data...');
+            // In real implementation, this would fetch latest data
+        }
+
+        // Initialize Charts
+        window.onload = function() {
+            // Population Overview Charts
+            new Chart(document.getElementById('adoptionChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Q1 2023', 'Q2 2023', 'Q3 2023', 'Q4 2023', 'Q1 2024', 'Q2 2024', 'Q3 2024'],
+                    datasets: [{
+                        label: 'Program Adoption Rate',
+                        data: [8, 10, 12, 14, 13, 15, 14.5],
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            new Chart(document.getElementById('regionalChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Northeast', 'South', 'Midwest', 'West'],
+                    datasets: [{
+                        data: [25, 35, 20, 20],
+                        backgroundColor: ['#3498db', '#2ecc71', '#e74c3c', '#f39c12']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Treatment Efficacy Charts
+            new Chart(document.getElementById('treatmentChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Avg. PHQ-9 Score',
+                        data: [12, 10, 9, 8, 7, 6],
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Avg. GAD-7 Score',
+                        data: [10, 9, 8, 7, 6, 5],
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Risk Stratification Charts
+            new Chart(document.getElementById('riskChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Low Risk', 'Medium Risk', 'High Risk'],
+                    datasets: [{
+                        label: 'Member Distribution',
+                        data: [47, 35, 18],
+                        backgroundColor: ['#27ae60', '#f39c12', '#e74c3c']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Claims & Utilization Charts
+            new Chart(document.getElementById('claimsChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Q1 2023', 'Q2 2023', 'Q3 2023', 'Q4 2023', 'Q1 2024', 'Q2 2024', 'Q3 2024'],
+                    datasets: [{
+                        label: 'Total Claims ($)',
+                        data: [3200000, 3100000, 3050000, 2950000, 2900000, 2850000, 2800000],
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // ROI Analytics Charts
+            new Chart(document.getElementById('roiChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Medical Savings', 'Productivity Gains', 'Reduced Turnover', 'Program Costs'],
+                    datasets: [{
+                        label: 'ROI Contribution',
+                        data: [2.1, 0.8, 0.5, -0.2],
+                        backgroundColor: ['#27ae60', '#2ecc71', '#16a085', '#e74c3c']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Additional Charts
+            new Chart(document.getElementById('ageChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['18-25', '26-35', '36-45', '46-55', '56-65', '65+'],
+                    datasets: [{
+                        label: 'Member Count',
+                        data: [320, 580, 720, 650, 420, 155],
+                        backgroundColor: '#3498db'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            new Chart(document.getElementById('utilizationChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Therapy', 'Medication', 'Crisis', 'Preventive'],
+                    datasets: [{
+                        data: [45, 30, 15, 10],
+                        backgroundColor: ['#3498db', '#2ecc71', '#e74c3c', '#f39c12']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        };
+    </script>
+</body>
+</html>
