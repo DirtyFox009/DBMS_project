@@ -448,6 +448,105 @@
             resize: vertical;
         }
         
+        /* Recommendation Styles */
+        .recommendation-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background-color: white;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .recommendation-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .recommendation-content {
+            flex: 1;
+        }
+        
+        .recommendation-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+        
+        .recommendation-desc {
+            color: var(--gray);
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .recommendation-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--gray);
+        }
+        
+        .recommendation-status {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-completed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-ignored {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .recommendation-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .recommendation-actions button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .btn-mark-complete {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-snooze {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .btn-dismiss {
+            background-color: var(--gray);
+            color: white;
+        }
+        
         /* Responsive Design */
         @media (max-width: 992px) {
             .container {
@@ -513,6 +612,7 @@
                 <li><a href="#" class="nav-link active" data-target="clients"><i class="fas fa-users"></i> My Clients</a></li>
                 <li><a href="#" class="nav-link" data-target="sessions"><i class="fas fa-calendar-alt"></i> Session Manager</a></li>
                 <li><a href="#" class="nav-link" data-target="progress"><i class="fas fa-chart-line"></i> Progress Tracking</a></li>
+                <li><a href="#" class="nav-link" data-target="recommendations"><i class="fas fa-lightbulb"></i> AI Recommendations</a></li>
                 <li><a href="#" class="nav-link" data-target="alerts"><i class="fas fa-bell"></i> AI Alert Center</a></li>
                 <li><a href="#" class="nav-link" data-target="notes"><i class="fas fa-sticky-note"></i> Clinical Notes</a></li>
             </ul>
@@ -768,7 +868,7 @@
                                 <td>2023-10-08</td>
                                 <td>David Wilson</td>
                                 <td>45 mins</td>
-                                <td>Phone Call</td>
+                                <td>Phone Session</td>
                                 <td>Completed</td>
                                 <td>
                                     <button class="action-btn" title="View Notes"><i class="fas fa-eye"></i></button>
@@ -870,6 +970,172 @@
                             <p>"I appreciate the practical strategies and the safe space to discuss my challenges."</p>
                         </div>
                     </div>
+                </div>
+            </div>
+            
+            <!-- AI Recommendations Section -->
+            <div id="recommendations" class="dashboard-section">
+                <div class="cards-container">
+                    <div class="card">
+                        <h3><i class="fas fa-lightbulb"></i> AI-Generated Recommendations</h3>
+                        <p>These personalized wellness suggestions are generated based on client mood patterns, stress levels, and journal entries.</p>
+                        
+                        <div class="recommendation-item">
+                            <div class="recommendation-icon">
+                                <i class="fas fa-moon"></i>
+                            </div>
+                            <div class="recommendation-content">
+                                <div class="recommendation-title">Sleep Hygiene Improvement</div>
+                                <div class="recommendation-desc">Client has reported consistent sleep deprivation (avg. 5.2 hrs/night). Recommend implementing a consistent bedtime routine and reducing screen time before sleep.</div>
+                                <div class="recommendation-meta">
+                                    <span>For: Sarah Johnson</span>
+                                    <span>Generated: 2023-10-14</span>
+                                    <span class="recommendation-status status-pending">Pending</span>
+                                </div>
+                                <div class="recommendation-actions">
+                                    <button class="btn-mark-complete">Mark Complete</button>
+                                    <button class="btn-snooze">Snooze</button>
+                                    <button class="btn-dismiss">Dismiss</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="recommendation-item">
+                            <div class="recommendation-icon">
+                                <i class="fas fa-walking"></i>
+                            </div>
+                            <div class="recommendation-content">
+                                <div class="recommendation-title">Daily Mindfulness Practice</div>
+                                <div class="recommendation-desc">Based on elevated stress levels and anxiety indicators, recommend introducing 10-minute daily mindfulness meditation using the app's guided sessions.</div>
+                                <div class="recommendation-meta">
+                                    <span>For: Michael Chen</span>
+                                    <span>Generated: 2023-10-13</span>
+                                    <span class="recommendation-status status-completed">Completed</span>
+                                </div>
+                                <div class="recommendation-actions">
+                                    <button class="btn-mark-complete" disabled>Mark Complete</button>
+                                    <button class="btn-snooze">Snooze</button>
+                                    <button class="btn-dismiss">Dismiss</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="recommendation-item">
+                            <div class="recommendation-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="recommendation-content">
+                                <div class="recommendation-title">Social Connection Activity</div>
+                                <div class="recommendation-desc">Client journal entries indicate feelings of isolation. Recommend joining a virtual support group or scheduling regular social activities.</div>
+                                <div class="recommendation-meta">
+                                    <span>For: David Wilson</span>
+                                    <span>Generated: 2023-10-12</span>
+                                    <span class="recommendation-status status-pending">Pending</span>
+                                </div>
+                                <div class="recommendation-actions">
+                                    <button class="btn-mark-complete">Mark Complete</button>
+                                    <button class="btn-snooze">Snooze</button>
+                                    <button class="btn-dismiss">Dismiss</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3><i class="fas fa-chart-bar"></i> Recommendation Effectiveness</h3>
+                        <div class="chart-container">
+                            <canvas id="recommendationChart"></canvas>
+                        </div>
+                        <div style="margin-top: 15px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <span>Completed Recommendations</span>
+                                <span class="risk-low">68%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 68%"></div>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between; margin: 15px 0 10px;">
+                                <span>Client Compliance Rate</span>
+                                <span class="risk-medium">42%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 42%; background-color: var(--warning);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>Recommendation History</h3>
+                        <div class="search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search recommendations...">
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Client</th>
+                                <th>Recommendation Type</th>
+                                <th>Status</th>
+                                <th>Effectiveness</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2023-10-14</td>
+                                <td>Sarah Johnson</td>
+                                <td>Sleep Hygiene</td>
+                                <td><span class="recommendation-status status-pending">Pending</span></td>
+                                <td>--</td>
+                                <td>
+                                    <button class="action-btn" title="View Details"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn" title="Edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn" title="Send Reminder"><i class="fas fa-bell"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2023-10-13</td>
+                                <td>Michael Chen</td>
+                                <td>Mindfulness Practice</td>
+                                <td><span class="recommendation-status status-completed">Completed</span></td>
+                                <td class="risk-low">High</td>
+                                <td>
+                                    <button class="action-btn" title="View Details"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn" title="Edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn" title="Reassign"><i class="fas fa-redo"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2023-10-12</td>
+                                <td>David Wilson</td>
+                                <td>Social Connection</td>
+                                <td><span class="recommendation-status status-pending">Pending</span></td>
+                                <td>--</td>
+                                <td>
+                                    <button class="action-btn" title="View Details"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn" title="Edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn" title="Send Reminder"><i class="fas fa-bell"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2023-10-10</td>
+                                <td>Maria Garcia</td>
+                                <td>Exercise Routine</td>
+                                <td><span class="recommendation-status status-completed">Completed</span></td>
+                                <td class="risk-medium">Medium</td>
+                                <td>
+                                    <button class="action-btn" title="View Details"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn" title="Edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn" title="Reassign"><i class="fas fa-redo"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
             
@@ -1121,6 +1387,7 @@
                     'clients': 'My Clients',
                     'sessions': 'Session Manager',
                     'progress': 'Progress Tracking',
+                    'recommendations': 'AI Recommendations',
                     'alerts': 'AI Alert Center',
                     'notes': 'Clinical Notes'
                 };
@@ -1133,6 +1400,33 @@
             e.preventDefault();
             alert('Clinical note has been saved successfully!');
             this.reset();
+        });
+        
+        // Recommendation actions
+        document.querySelectorAll('.btn-mark-complete').forEach(button => {
+            button.addEventListener('click', function() {
+                const statusElement = this.closest('.recommendation-item').querySelector('.recommendation-status');
+                statusElement.textContent = 'Completed';
+                statusElement.className = 'recommendation-status status-completed';
+                this.disabled = true;
+                alert('Recommendation marked as completed!');
+            });
+        });
+        
+        document.querySelectorAll('.btn-snooze').forEach(button => {
+            button.addEventListener('click', function() {
+                alert('Recommendation snoozed for 3 days');
+            });
+        });
+        
+        document.querySelectorAll('.btn-dismiss').forEach(button => {
+            button.addEventListener('click', function() {
+                const item = this.closest('.recommendation-item');
+                item.style.opacity = '0';
+                setTimeout(() => {
+                    item.remove();
+                }, 500);
+            });
         });
         
         // Initialize charts
@@ -1192,6 +1486,30 @@
                         y: {
                             min: 0,
                             max: 10
+                        }
+                    }
+                }
+            });
+            
+            // Recommendation chart
+            const recommendationCtx = document.getElementById('recommendationChart').getContext('2d');
+            new Chart(recommendationCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Sleep', 'Mindfulness', 'Exercise', 'Social', 'Nutrition'],
+                    datasets: [{
+                        label: 'Effectiveness Score',
+                        data: [85, 92, 78, 65, 70],
+                        backgroundColor: '#4a6fa5'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
                         }
                     }
                 }
